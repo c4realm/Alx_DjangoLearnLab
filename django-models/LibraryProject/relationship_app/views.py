@@ -1,3 +1,22 @@
-from django.shortcuts import render
+from django.shortcuts import render # i don't know what this is
+from .models import Book, Library
+from django.views.generic import DetailView
+from django.http import HttpResponse
+
 
 # Create your views here.
+
+def home(request):
+    return HttpResponse("Welcome to the Library App!")
+
+
+def list_books(request):
+    books = Book.objects.all()
+    return render(request, "list_books.html", {"books": books})
+
+
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = "library_detail.html"
+    context_object_name = "library"
+
