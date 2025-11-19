@@ -1,5 +1,5 @@
 from django.shortcuts import render # i don't know what this is
-from .models import Book, Library
+from .models import Library, Book
 from django.views.generic import DetailView
 from django.http import HttpResponse
 
@@ -17,6 +17,6 @@ def list_books(request):
 
 class LibraryDetailView(DetailView):
     model = Library
-    template_name = "library_detail.html"
+    template_name = "relationship_app/library_detail.html"
     context_object_name = "library",
 
