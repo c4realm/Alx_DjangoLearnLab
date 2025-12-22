@@ -1,14 +1,17 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
 
-@user_passes_test(lambda user: user.userprofile.role == 'Admin')
-def admin_view(request):
-    return render(request, 'admin_view.html')
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    return render(request, 'add_book.html')
 
-@user_passes_test(lambda user: user.userprofile.role == 'Librarian')
-def librarian_view(request):
-    return render(request, 'librarian_view.html')
 
-@user_passes_test(lambda user: user.userprofile.role == 'Member')
-def member_view(request):
-    return render(request, 'member_view.html')
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, book_id):
+    return render(request, 'edit_book.html')
+
+
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    return render(request, 'delete_book.html')
+
