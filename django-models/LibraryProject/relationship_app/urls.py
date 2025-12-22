@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import add_book, edit_book, delete_book
+from . import views
 
 urlpatterns = [
-    path('add_book/', add_book, name='add_book'),
-    path('edit_book/<int:book_id>/', edit_book, name='edit_book'),
-    path('delete_book/<int:book_id>/', delete_book, name='delete_book'),
+    # ... other URLs ...
+    path('admin-view/', views.admin_view, name='admin_view'),
+    path('librarian-view/', views.librarian_view, name='librarian_view'),
+    path('member-view/', views.member_view, name='member_view'),
 ]
-
