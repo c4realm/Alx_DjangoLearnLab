@@ -14,7 +14,7 @@ import re
 import os
 
 from .models import Book, CustomUser
-from .forms import BookForm, ExampleForm  # <-- This line must be exactly like this
+from .forms import BookForm, ExampleForm, ExampleForm  # <-- This line must be exactly like this
 
 # Rest of your views.py continues here...
 def is_admin(user):
