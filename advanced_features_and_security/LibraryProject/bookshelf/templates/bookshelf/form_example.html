@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Form Example</title>
+</head>
+<body>
+    <h1>Form Example Template</h1>
+    <p>This is a secure form example with CSRF protection.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="example_field" placeholder="Enter text">
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
