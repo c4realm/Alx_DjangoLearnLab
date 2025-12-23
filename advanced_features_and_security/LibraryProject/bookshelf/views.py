@@ -14,10 +14,9 @@ import re
 import os
 
 from .models import Book, CustomUser
-from .forms import BookForm, ExampleForm
+from .forms import BookForm, ExampleForm  # <-- This line must be exactly like this
 
-
-# Role checking functions
+# Rest of your views.py continues here...
 def is_admin(user):
     return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
 
