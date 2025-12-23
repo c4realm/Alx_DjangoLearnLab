@@ -10,11 +10,12 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from django.core.exceptions import ValidationError
 from django.utils.html import escape
+from .forms import BookForm
+from .forms import ExampleForm
 import re
 import os
 
 from .models import Book, CustomUser
-from .forms import BookForm, ExampleForm, ExampleForm  # <-- This line must be exactly like this
 
 # Rest of your views.py continues here...
 def is_admin(user):
