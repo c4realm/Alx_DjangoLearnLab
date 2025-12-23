@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-control { width: 100%; padding: 8px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-submit { background-color: #4CAF50; color: white; }
+        .error { color: red; font-size: 0.9em; }
+        .help-text { color: #666; font-size: 0.8em; }
+        .success-message { background-color: #dff0d8; color: #3c763d; padding: 15px; margin: 20px 0; }
+        .security-info { background-color: #f0f8ff; padding: 15px; margin: 20px 0; border-left: 4px solid #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ title }}</h1>
+        
+        <div class="security-info">
+            <h3>Security Features Demonstrated:</h3>
+            <ul>
+                <li><strong>CSRF Protection:</strong> This form includes {% csrf_token %}</li>
+                <li><strong>Input Validation:</strong> All fields are validated server-side</li>
+                <li><strong>XSS Prevention:</strong> User input is sanitized and escaped</li>
+                <li><strong>SQL Injection Protection:</strong> Input is checked for SQL keywords</li>
+                <li><strong>Length Constraints:</strong> Maximum lengths enforced</li>
+                <li><strong>Type Validation:</strong> Email and number fields validated</li>
+            </ul>
+        </div>
+        
+        {% if message %}
+        <div class="success-message">
+            {{ message }}
+        </div>
+        {% endif %}
+        
+        <form method="post" action="{% url 'example_form' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_name">{{ form.name.label }}</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="error">{{ form.name.errors|join:", " }}</div>
+                {% endif %}
+                <div class="help-text">{{ form.name.help_text }}</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <div class="error">{{ form.email.errors|join:", " }}</div>
+                {% endif %}
+                <div class="help-text">{{ form.email.help_text }}</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_age">{{ form.age.label }}</label>
+                {{ form.age }}
+                {% if form.age.errors %}
+                <div class="error">{{ form.age.errors|join:", " }}</div>
+                {% endif %}
+                <div class="help-text">{{ form.age.help_text }}</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_comment">{{ form.comment.label }}</label>
+                {{ form.comment }}
+                {% if form.comment.errors %}
+                <div class="error">{{ form.comment.errors|join:", " }}</div>
+                {% endif %}
+                <div class="help-text">{{ form.comment.help_text }}</div>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    {{ form.agree_to_terms }} {{ form.agree_to_terms.label }}
+                </label>
+                {% if form.agree_to_terms.errors %}
+                <div class="error">{{ form.agree_to_terms.errors|join:", " }}</div>
+                {% endif %}
+                <div class="help-text">{{ form.agree_to_terms.help_text }}</div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-submit">Submit Securely</button>
+            </div>
+        </form>
+        
+        <div class="security-info">
+            <h3>What makes this form secure?</h3>
+            <ol>
+                <li><strong>CSRF Token:</strong> The {% csrf_token %} tag prevents Cross-Site Request Forgery attacks.</li>
+                <li><strong>Field Validation:</strong> Each field has specific validation rules (length, type, format).</li>
+                <li><strong>Input Sanitization:</strong> The clean_name() method removes HTML tags and SQL keywords.</li>
+                <li><strong>Escape on Output:</strong> Django templates automatically escape HTML in variables.</li>
+                <li><strong>Error Handling:</strong> Validation errors are shown without exposing system details.</li>
+                <li><strong>Parameterized Queries:</strong> If saved to database, Django ORM uses parameterized queries.</li>
+            </ol>
+        </div>
+        
+        <p><a href="{% url 'book_list' %}">← Back to Book List</a></p>
+    </div>
+</body>
+</html>

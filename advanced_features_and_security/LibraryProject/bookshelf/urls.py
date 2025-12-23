@@ -13,3 +13,7 @@ urlpatterns = [
     path('books/<int:pk>/edit/', views.book_edit, name='book_edit'),
     path('books/<int:pk>/delete/', views.book_delete, name='book_delete'),
 ]
+
+# Example form URL
+path('example-form/', views.example_form_view, name='example_form'),
+path('form-security/', views.form_security_demo, name='form_security_demo'),
