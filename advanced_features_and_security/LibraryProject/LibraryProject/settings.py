@@ -1,18 +1,57 @@
 """
-Django settings for LibraryProject project.
+Django settings for LibraryProject project with security best practices.
 """
 
 import os
 from pathlib import Path
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-test-key-for-development-only'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-development-key-change-in-production')
 
-DEBUG = True
-ALLOWED_HOSTS = []
+# ============================================
+# SECURITY SETTINGS
+# ============================================
 
-# Application definition
+# SECURITY WARNING: don't run with debug turned on in production!
+# Step 1.1: Set DEBUG to False in production (using environment variable)
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+
+# List of allowed hosts for production
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# ============================================
+# SECURITY MIDDLEWARE AND SETTINGS
+# ============================================
+
+# Security middleware settings
+SECURE_BROWSER_XSS_FILTER = True  # Enable browser XSS filter
+X_FRAME_OPTIONS = 'DENY'  # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+
+# Cookie security settings
+SESSION_COOKIE_SECURE = True  # Send session cookie only over HTTPS
+CSRF_COOKIE_SECURE = True  # Send CSRF cookie only over HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript access to session cookie
+CSRF_COOKIE_HTTPONLY = True  # Prevent JavaScript access to CSRF cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# HTTPS settings
+SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False') == 'True'
+SECURE_HSTS_SECONDS = 31536000  # 1 year HSTS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Additional security headers
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ============================================
+# APPLICATION DEFINITION
+# ============================================
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -20,7 +59,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf',  # CHANGED FROM 'relationship_app' TO 'bookshelf'
+    'bookshelf',
+    'csp',# Content Security Policy app
 ]
 
 MIDDLEWARE = [
@@ -31,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     # CSP middleware
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -53,6 +94,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
+# ============================================
+# DATABASE
+# ============================================
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -60,12 +105,19 @@ DATABASES = {
     }
 }
 
+# ============================================
+# PASSWORD VALIDATION
+# ============================================
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 12,  # Strong password requirement
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -75,15 +127,85 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Password hashers (use strongest available)
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
+# ============================================
+# INTERNATIONALIZATION
+# ============================================
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ============================================
+# STATIC & MEDIA FILES
+# ============================================
+
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ============================================
+# CUSTOM USER MODEL
+# ============================================
+
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CRITICAL CHANGE: Must point to bookshelf app
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
+# ============================================
+# CONTENT SECURITY POLICY (CSP) SETTINGS
+# Step 4: Implement Content Security Policy
+# ============================================
+CONTENT_SECURITY_POLICY = {
+    'DIRECTIVES': {
+        'base-uri': ("'self'",),
+        'connect-src': ("'self'",),
+        'default-src': ("'self'",),
+        'font-src': ("'self'",),
+        'form-action': ("'self'",),
+        'frame-ancestors': ("'none'",),
+        'frame-src': ("'none'",),
+        'img-src': ("'self'", 'data:'),
+        'object-src': ("'none'",),
+        'script-src': ("'self'", "'unsafe-inline'"),
+        'style-src': ("'self'", "'unsafe-inline'")
+    }
+}
+# ============================================
+# LOGGING (for security monitoring)
+# ============================================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'security_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'security.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
