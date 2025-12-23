@@ -33,3 +33,12 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+from .models import Book
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'published_date', 'isbn']
+    list_filter = ['author', 'published_date']
+    search_fields = ['title', 'author', 'isbn']
+    ordering = ['title']

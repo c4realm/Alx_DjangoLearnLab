@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        .btn { padding: 8px 16px; text-decoration: none; border-radius: 4px; }
+        .btn-primary { background-color: #4CAF50; color: white; }
+        .btn-edit { background-color: #008CBA; color: white; }
+        .btn-delete { background-color: #f44336; color: white; }
+        .btn-view { background-color: #555555; color: white; }
+        .messages { margin: 20px 0; padding: 10px; }
+        .success { background-color: #dff0d8; color: #3c763d; }
+        .permission-info { background-color: #f0f0f0; padding: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book Management System</h1>
+        
+        <!-- Display messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="success">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Permission info -->
+        <div class="permission-info">
+            <h3>User Permissions:</h3>
+            <ul>
+                <li>Can view: {{ perms.bookshelf.can_view }}</li>
+                <li>Can create: {{ perms.bookshelf.can_create }}</li>
+                <li>Can edit: {{ perms.bookshelf.can_edit }}</li>
+                <li>Can delete: {{ perms.bookshelf.can_delete }}</li>
+            </ul>
+            <p>User: {{ user.username }} | Groups: {% for group in user.groups.all %}{{ group.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            {% if perms.bookshelf.can_create %}
+            <a href="{% url 'book_create' %}" class="btn btn-primary">Create New Book</a>
+            {% endif %}
+        </div>
+        
+        <h2>Books</h2>
+        {% if books %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Published Date</th>
+                    <th>ISBN</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.published_date }}</td>
+                    <td>{{ book.isbn }}</td>
+                    <td>
+                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-view">View</a>
+                        {% if perms.bookshelf.can_edit %}
+                        <a href="{% url 'book_edit' book.pk %}" class="btn btn-edit">Edit</a>
+                        {% endif %}
+                        {% if perms.bookshelf.can_delete %}
+                        <a href="{% url 'book_delete' book.pk %}" class="btn btn-delete">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No books available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
