@@ -5,9 +5,12 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import Book, Author
+from django.contrib.auth.models import User
 
 class BookAPITests(APITestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpass')
+    self.client.login(username='testuser', password='testpass')
         # Create an author for the books
         self.author = Author.objects.create(name="Test Author")
 
