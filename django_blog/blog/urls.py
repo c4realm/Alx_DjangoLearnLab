@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import register_view, profile_view
 from .views import PostListView,  PostDetailView, PostCreateView, PostUpdateView, PostDeleteView
-from .views import CommentCreateView, CommentUpdateView, CommentDeleteView,
+from .views import CommentCreateView, CommentUpdateView, CommentDeleteView
 
 urlpatterns = [
     path("login/", auth_views.LoginView.as_view(template_name="blog/login.html"), name="login"),
