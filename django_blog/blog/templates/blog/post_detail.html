@@ -1,3 +1,22 @@
 <h1>{{ object.title }}</h1>
 <p>{{ object.content }}</p>
+<h3>Comments</h3>
+
+{% for comment in object.comments.all %}
+  <p>
+    <strong>{{ comment.author }}</strong><br>
+    {{ comment.content }}
+  </p>
+
+  {% if user == comment.author %}
+    <a href="{% url 'comment-update' comment.pk %}">Edit</a>
+    <a href="{% url 'comment-delete' comment.pk %}">Delete</a>
+  {% endif %}
+{% empty %}
+  <p>No comments yet.</p>
+{% endfor %}
+
+{% if user.is_authenticated %}
+  <a href="{% url 'comment-create' object.pk %}">Add Comment</a>
+{% endif %}
 
