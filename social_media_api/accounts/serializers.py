@@ -6,6 +6,7 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    dummy_field = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     class Meta:
