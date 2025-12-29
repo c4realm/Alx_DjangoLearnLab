@@ -10,3 +10,13 @@
 - POST /login → returns token
 - GET /profile → requires token
 
+## Posts and Comments API
+
+### Endpoints
+- GET /api/posts/
+- POST /api/posts/
+- GET /api/comments/
+- POST /api/comments/
+
+Authentication is required for creating, updating, and deleting posts or comments.
+

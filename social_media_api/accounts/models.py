@@ -12,3 +12,11 @@ class User(AbstractUser):
         blank=True,
         related_name='following'
     )
+#users follow users, symmertical false following is one way, related_name = 'followers' lets you access who follows a user
+class User(AbstractUser):
+    following = models.ManyToManyField("self", 
+                                       symmetrical = False, 
+                                       related_name = "followers", 
+                                       blank = True
+                                       )
+
