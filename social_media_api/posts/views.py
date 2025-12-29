@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListAPIView
 from .models import Post
 from .serializers import PostSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
 # Create your views here.
 #uses viesets and Crud include ans users can only create as themselves
 
@@ -29,13 +31,14 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-
-class FeedView(ListAPIView):
-    serializer_class = PostSerializer
+class FeedView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Post.objects.filter(
-            author__in=user.following.all()
-        ).order_by("-created_at")
+    def get(self, request):
+        user = request.user
+        # Get the list of users this user follows
+        following_users = user.following.all()
+        # Fetch posts from these users, most recent first
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
