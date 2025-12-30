@@ -9,6 +9,14 @@ from .models import Post
 from .serializers import PostSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import Post, Like
+from notifications.models import Notification
+from django.contrib.contenttypes.models import ContentType
+
 # Create your views here.
 #uses viesets and Crud include ans users can only create as themselves
 
@@ -42,3 +50,37 @@ class FeedView(APIView):
         posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    like, created = Like.objects.get_or_create(
+        user=request.user,
+        post=post
+    )
+
+    if not created:
+        return Response({"detail": "Already liked"}, status=400)
+
+    Notification.objects.create(
+        recipient=post.author,
+        actor=request.user,
+        verb="liked your post",
+        content_type=ContentType.objects.get_for_model(post),
+        object_id=post.id
+    )
+
+    return Response({"detail": "Post liked"})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unlike_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    Like.objects.filter(user=request.user, post=post).delete()
+
+    return Response({"detail": "Post unliked"})
+
+
