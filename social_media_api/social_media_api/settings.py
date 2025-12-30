@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-["DEBUG = False"]
+"DEBUG = False"
 SECURE_BROWSER_XSS_FILTER = True
 
 X_FRAME_OPTIONS = 'DENY'
@@ -90,8 +90,13 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-     'default': dj_database_url.config(
-        default=config('DATABASE_URL')    }
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'social_media_api',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '5432',
 }
 
 
